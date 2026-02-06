@@ -5,9 +5,10 @@ import { eq } from 'drizzle-orm';
 import OpenAI from 'openai';
 import { env } from '$env/dynamic/private';
 
-const openai = new OpenAI({
-    apiKey: env.OPENAI_API_KEY,
-});
+
+
+// Initialized inside POST handler
+let openai: OpenAI;
 
 // Helper to split text into safe chunks
 function smartSplit(text: string, maxLength = 12000): string[] {
@@ -111,6 +112,12 @@ export const POST: RequestHandler = async ({ params }) => {
                         status: `Translating part ${i + 1} of ${totalChunks} (${Math.round(totalLength/1024)}KB)...` 
                     }) + '\n';
                     controller.enqueue(msg);
+
+                    if (!openai) {
+                         openai = new OpenAI({
+                            apiKey: env.OPENAI_API_KEY,
+                        });
+                    }
 
                     const completion = await openai.chat.completions.create({
                         model: "gpt-4o",

@@ -21,8 +21,24 @@ if (!existsSync(dataDir)) {
 const sqlite = new Database(join(dataDir, 'igg_v2.db'));
 sqlite.pragma('journal_mode = WAL'); // Better performance
 
+import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
+
 // Create Drizzle instance with schema
 export const db = drizzle(sqlite, { schema });
+
+// Run migrations on startup
+// This is critical for Docker deployment where the DB starts empty
+try {
+    const migrationsFolder = join(projectRoot, 'drizzle');
+    if (existsSync(migrationsFolder)) {
+        migrate(db, { migrationsFolder });
+        console.log('✅ Database migrations completed.');
+    } else {
+        console.warn('⚠️ No migrations folder found at', migrationsFolder);
+    }
+} catch (e) {
+    console.error('❌ Migration failed:', e);
+}
 
 // Export schema for convenience
 export * from './schema';
