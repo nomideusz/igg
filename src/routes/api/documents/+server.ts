@@ -46,10 +46,14 @@ export const POST: RequestHandler = async ({ request }) => {
 			return json({ error: 'Unsupported file type. Please upload DOCX or PDF.' }, { status: 400 });
 		}
 
-		// Save file to static/uploads
-		const uploadDir = 'static/uploads';
 		const fs = await import('node:fs/promises');
 		const path = await import('node:path');
+
+		// Save file to static/uploads or persistent volume
+		// If DATA_DIR is set (Docker), use that. Otherwise use static/uploads (dev).
+		const uploadDir = process.env.DATA_DIR 
+			? path.join(process.env.DATA_DIR, 'uploads') 
+			: 'static/uploads';
 		
 		try {
 			await fs.mkdir(uploadDir, { recursive: true });

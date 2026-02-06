@@ -1,0 +1,9 @@
+Dockerfile
+.dockerignore
+node_modules
+.git
+.svelte-kit
+build
+.env
+data
+static/uploads

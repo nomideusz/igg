@@ -1,0 +1,26 @@
+# fly.toml app configuration file generated for igg-document-assistant on 2026-02-06T11:45:29+01:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "igg-assistant" # Change this to your unique app name
+primary_region = "fra" # Frankfurt (change if needed)
+
+[build]
+  dockerfile = "Dockerfile"
+
+[mounts]
+  source = "igg_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "1gb" # slightly more memory for image/pdf processing

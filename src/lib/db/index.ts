@@ -10,7 +10,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = join(__dirname, '..', '..', '..');
 
 // Ensure data directory exists
-const dataDir = join(projectRoot, 'data');
+// Use process.env.DATA_DIR if provided (docker), otherwise default to project root/data
+const dataDir = process.env.DATA_DIR || join(projectRoot, 'data');
+
 if (!existsSync(dataDir)) {
 	mkdirSync(dataDir, { recursive: true });
 }
